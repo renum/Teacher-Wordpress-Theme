@@ -1,0 +1,43 @@
+{
+  "name": "teacher",
+  "version": "1.0.0",
+  "description": "Teacher theme packages",
+  "main": "main.js",
+  "scripts": {
+    "prod": "cross-env NODE_ENV=production webpack --mode production --progress",
+    "dev": "cross-env NODE_ENV=development webpack --watch --mode development --progress",
+    "clean": "rm -rf build/*"
+  },
+  "keywords": [
+    "wordpress",
+    "themes"
+  ],
+  "author": "Renu Mehta",
+  "license": "MIT",
+  "private": true,
+  "browserslist": [
+    "defaults"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.21.0",
+    "babel-loader": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "optimize-css-assets-webpack-plugin": "^6.0.1",
+    "path": "^0.12.7",
+    "sass": "^1.58.3",
+    "sass-loader": "^13.2.0",
+    "sass-mq": "^6.0.0",
+    "uglifyjs-webpack-plugin": "^1.1.2",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "dependencies": {
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-react": "^7.18.6",
+    "clean-webpack-plugin": "^4.0.0",
+    "css-loader": "^6.7.3",
+    "file-loader": "^6.2.0",
+    "mini-css-extract-plugin": "^2.7.2",
+    "node-gyp": "^9.3.1"
+  }
+}

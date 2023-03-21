@@ -1,0 +1,6 @@
+
+/**Open dropdown on hover also**/
+
+.nav-item:hover .dropdown-menu:not(.show){
+    display:block;
+}

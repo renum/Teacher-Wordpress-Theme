@@ -1,0 +1,5 @@
+
+/*Hide updated date(just used for SEO purposes)*/
+.updated:not(.published){
+    display: none;
+}
