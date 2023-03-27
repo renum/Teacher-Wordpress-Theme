@@ -112,6 +112,14 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
       this.ajaxUrl = (_siteConfig$ajaxUrl = (_siteConfig = siteConfig) === null || _siteConfig === void 0 ? void 0 : _siteConfig.ajaxUrl) !== null && _siteConfig$ajaxUrl !== void 0 ? _siteConfig$ajaxUrl : '';
       this.ajaxNonce = (_siteConfig$ajax_nonc = (_siteConfig2 = siteConfig) === null || _siteConfig2 === void 0 ? void 0 : _siteConfig2.ajax_nonce) !== null && _siteConfig$ajax_nonc !== void 0 ? _siteConfig$ajax_nonc : '';
       this.loadMoreBtn = $('#load-more');
+      this.loadingTextEl = $('#loading-text');
+      this.isRequestProcessing = false;
+      this.options = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 1.0 // 1.0 means set isIntersecting to true when element comes in 100% view.
+      };
+
       this.init();
     }
     _createClass(LoadMore, [{
@@ -121,10 +129,42 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
         if (!this.loadMoreBtn.length) {
           return;
         }
-        this.loadMoreBtn.on('click', function () {
-          return _this.handleLoadMorePosts();
+        this.totalPagesCount = $('#post-pagination').data('max-pages');
+
+        /**
+         * Add the IntersectionObserver api, and listen to the load more intersection status.
+         * so that intersectionObserverCallback gets called if the element intersection status changes.
+         *
+         * @type {IntersectionObserver}
+         */
+        var observer = new IntersectionObserver(function (entries) {
+          return _this.intersectionObserverCallback(entries);
+        }, this.options);
+        observer.observe(this.loadMoreBtn[0]);
+      }
+
+      /**
+       * Gets called on initial render with status 'isIntersecting' as false and then
+       * everytime element intersection status changes.
+       *
+       * @param {array} entries No of elements under observation.
+       *
+       */
+    }, {
+      key: "intersectionObserverCallback",
+      value: function intersectionObserverCallback(entries) {
+        var _this2 = this;
+        // array of observing elements
+
+        // The logic is apply for each entry ( in this case it's just one loadmore button )
+        entries.forEach(function (entry) {
+          // If load more button in view.
+          if (entry !== null && entry !== void 0 && entry.isIntersecting) {
+            _this2.handleLoadMorePosts();
+          }
         });
       }
+
       /**
        * Load more posts.
        *
@@ -139,15 +179,14 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
     }, {
       key: "handleLoadMorePosts",
       value: function handleLoadMorePosts() {
-        var _this2 = this;
+        var _this3 = this;
         // Get page no from data attribute of load-more button.
         var page = this.loadMoreBtn.data('page');
-        console.log(page);
-        if (!page) {
+        if (!page || this.isRequestProcessing) {
           return null;
         }
         var nextPage = parseInt(page) + 1; // Increment page count by one.
-        console.log(nextPage);
+        this.isRequestProcessing = true;
         $.ajax({
           url: this.ajaxUrl,
           type: 'post',
@@ -157,20 +196,29 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
             ajax_nonce: this.ajaxNonce
           },
           success: function success(response) {
-            if (0 === parseInt(response)) {
-              _this2.loadMoreBtn.remove();
-              //console.log('if of success');
-            } else {
-              _this2.loadMoreBtn.attr('data-page', nextPage);
-              $('#load-more-content').append(response);
-              //console.log('else of success');
-            }
+            _this3.loadMoreBtn.data('page', nextPage);
+            $('#load-more-content').append(response);
+            _this3.removeLoadMoreIfOnLastPage(nextPage);
+            _this3.isRequestProcessing = false;
           },
-
           error: function error(response) {
             console.log(response);
+            _this3.isRequestProcessing = false;
           }
         });
+      }
+
+      /**
+       * Remove Load more Button If on last page.
+       *
+       * @param {int} nextPage New Page.
+       */
+    }, {
+      key: "removeLoadMoreIfOnLastPage",
+      value: function removeLoadMoreIfOnLastPage(nextPage) {
+        if (nextPage + 1 > this.totalPagesCount) {
+          this.loadMoreBtn.remove();
+        }
       }
     }]);
     return LoadMore;

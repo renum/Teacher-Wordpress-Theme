@@ -25,7 +25,7 @@ class Loadmore_Posts{
          * 
          */
 
-         add_action('wp_ajax_nopriv_loadmore',[$this,'ajax_script_post_load_more']);
+         add_action('wp_ajax_nopriv_load_more',[$this,'ajax_script_post_load_more']);
          add_action('wp_ajax_load_more',[$this,'ajax_script_post_load_more']);
 
 		 /**
@@ -58,8 +58,9 @@ class Loadmore_Posts{
 		 * If get_query_var( 'paged' ) is 2 or more, its a number pagination query.
 		 * If $_POST['page'] has a value which means its a loadmore request, which will take precedence.
 		 */
-		$page_no = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : 1;
+		$page_no = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : 1;	
 		$page_no = ! empty( $_POST['page'] ) ? filter_var( $_POST['page'], FILTER_VALIDATE_INT ) + 1 : $page_no;
+		
 
 		// Default Argument.
 		$args = [
